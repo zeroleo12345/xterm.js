@@ -1,5 +1,7 @@
 yarn
 
+yarn run install-addons
+
 yarn run build
 
 yarn run package
