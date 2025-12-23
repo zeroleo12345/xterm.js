@@ -248,6 +248,7 @@ export interface ITerminalOptions {
   windowOptions?: IWindowOptions;
   wordSeparator?: string;
   overviewRulerWidth?: number;
+  scrollOnEraseInDisplay?: boolean;
 
   [key: string]: any;
   cancelEvents: boolean;

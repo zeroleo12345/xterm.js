@@ -5,3 +5,5 @@ yarn run install-addons
 yarn run build
 
 yarn run package
+
+cp lib/* /Users/zlx/github/tabby_project/tabby/tabby-terminal/node_modules/@xterm/xterm/lib/
