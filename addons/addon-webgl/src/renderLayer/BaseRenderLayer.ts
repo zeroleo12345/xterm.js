@@ -4,16 +4,17 @@
  */
 
 import { ReadonlyColorSet } from 'browser/Types';
-import { acquireTextureAtlas } from 'browser/renderer/shared/CharAtlasCache';
-import { TEXT_BASELINE } from 'browser/renderer/shared/Constants';
-import { throwIfFalsy } from 'browser/renderer/shared/RendererUtils';
-import { IRenderDimensions, ITextureAtlas } from 'browser/renderer/shared/Types';
+import { acquireTextureAtlas } from '../CharAtlasCache';
+import { IRenderDimensions } from 'browser/renderer/shared/Types';
 import { ICoreBrowserService, IThemeService } from 'browser/services/Services';
-import { Disposable, toDisposable } from 'common/Lifecycle';
+import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { CellData } from 'common/buffer/CellData';
 import { IOptionsService } from 'common/services/Services';
 import { Terminal } from '@xterm/xterm';
 import { IRenderLayer } from './Types';
+import { throwIfFalsy } from 'browser/renderer/shared/RendererUtils';
+import { TEXT_BASELINE } from '../Constants';
+import type { ITextureAtlas } from '../Types';
 
 export abstract class BaseRenderLayer extends Disposable implements IRenderLayer {
   private _canvas: HTMLCanvasElement;
@@ -43,11 +44,11 @@ export abstract class BaseRenderLayer extends Disposable implements IRenderLayer
     this._canvas.style.zIndex = zIndex.toString();
     this._initCanvas();
     this._container.appendChild(this._canvas);
-    this.register(this._themeService.onChangeColors(e => {
+    this._register(this._themeService.onChangeColors(e => {
       this._refreshCharAtlas(terminal, e);
       this.reset(terminal);
     }));
-    this.register(toDisposable(() => {
+    this._register(toDisposable(() => {
       this._canvas.remove();
     }));
   }
@@ -94,7 +95,8 @@ export abstract class BaseRenderLayer extends Disposable implements IRenderLayer
     if (this._deviceCharWidth <= 0 && this._deviceCharHeight <= 0) {
       return;
     }
-    this._charAtlas = acquireTextureAtlas(terminal, this._optionsService.rawOptions, colorSet, this._deviceCellWidth, this._deviceCellHeight, this._deviceCharWidth, this._deviceCharHeight, this._coreBrowserService.dpr);
+
+    this._charAtlas = acquireTextureAtlas(terminal, this._optionsService.rawOptions, colorSet, this._deviceCellWidth, this._deviceCellHeight, this._deviceCharWidth, this._deviceCharHeight, this._coreBrowserService.dpr, 2048);
     this._charAtlas.warmUp();
   }
 

@@ -138,6 +138,32 @@ describe('SerializeAddon', () => {
       assert.equal((output.match(/<div><span>terminal<\/span><\/div>/g) || []).length, 1, output);
     });
 
+    it('basic terminal with html unsafe chars', async () => {
+      await writeP(terminal, ' <a>&pi; ');
+      terminal.select(1, 0, 7);
+
+      const output = serializeAddon.serializeAsHTML({
+        onlySelection: true
+      });
+      assert.equal((output.match(/<div><span>&lt;a>&amp;pi;<\/span><\/div>/g) || []).length, 1, output);
+    });
+
+    it('serializes rows within a provided range', async () => {
+      await writeP(terminal, 'bye hello\r\nworld');
+      const output = serializeAddon.serializeAsHTML({
+        range: {
+          startLine: 0,
+          endLine: 0,
+          startCol: 4
+        }
+      });
+      const rowMatches = output.match(/<div><span>.*?<\/span><\/div>/g) || [];
+      assert.equal(rowMatches.length, 1, output);
+      assert.ok(rowMatches[0]?.includes('hello'));
+      assert.ok(!output.includes('bye'));
+      assert.ok(!output.includes('world'));
+    });
+
     it('cells with bold styling', async () => {
       await writeP(terminal, ' ' + sgr('1') + 'terminal' + sgr('22') + ' ');
 
@@ -212,7 +238,7 @@ describe('SerializeAddon', () => {
 
     it('empty terminal with default options', async () => {
       const output = serializeAddon.serializeAsHTML();
-      assert.equal((output.match(/color: #000000; background-color: #ffffff; font-family: courier-new, courier, monospace; font-size: 15px;/g) || []).length, 1, output);
+      assert.equal((output.match(/color: #000000; background-color: #ffffff; font-family: monospace; font-size: 15px;/g) || []).length, 1, output);
     });
 
     it('empty terminal with custom options', async () => {
@@ -232,7 +258,7 @@ describe('SerializeAddon', () => {
       const output = serializeAddon.serializeAsHTML({
         includeGlobalBackground: true
       });
-      assert.equal((output.match(/color: #ffffff; background-color: #000000; font-family: courier-new, courier, monospace; font-size: 15px;/g) || []).length, 1, output);
+      assert.equal((output.match(/color: #ffffff; background-color: #000000; font-family: monospace; font-size: 15px;/g) || []).length, 1, output);
     });
 
     it('cells with custom color styling', async () => {

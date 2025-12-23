@@ -26,14 +26,17 @@ module.exports = {
     extensions: [ '.js' ],
     alias: {
       common: path.resolve('../../out/common'),
-      browser: path.resolve('../../out/browser')
+      browser: path.resolve('../../out/browser'),
+      vs: path.resolve('../../out/vs')
     }
   },
   output: {
     filename: mainFile,
     path: path.resolve('./lib'),
     library: addonName,
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    // Force usage of globalThis instead of global / self. (This is cross-env compatible)
+    globalObject: 'globalThis',
   },
   mode: 'production'
 };

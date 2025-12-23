@@ -1,11 +1,12 @@
 {
   "name": "@xterm/addon-image",
-  "version": "0.7.0",
+  "version": "0.9.0",
   "author": {
     "name": "The xterm.js authors",
     "url": "https://xtermjs.org/"
   },
   "main": "lib/addon-image.js",
+  "module": "lib/addon-image.mjs",
   "types": "typings/addon-image.d.ts",
   "repository": "https://github.com/xtermjs/xterm.js/tree/master/addons/addon-image",
   "license": "MIT",
@@ -19,10 +20,8 @@
   "scripts": {
     "prepackage": "../../node_modules/.bin/tsc -p .",
     "package": "../../node_modules/.bin/webpack",
-    "prepublishOnly": "npm run package"
-  },
-  "peerDependencies": {
-    "@xterm/xterm": "^5.2.0"
+    "prepublishOnly": "npm run package",
+    "start": "node ../../demo/start"
   },
   "devDependencies": {
     "sixel": "^0.16.0",

@@ -4,6 +4,8 @@ node_modules/
 lib/
 out/
 out-test/
+out-esbuild/
+out-esbuild-test/
 .nyc_output/
 Makefile.gyp
 *.Makefile
@@ -16,7 +18,8 @@ npm-debug.log
 .env
 build/
 .DS_Store
-package-lock.json
+yarn.lock
+test-results/
 
 # Keep bundled code out of Git
 dist/

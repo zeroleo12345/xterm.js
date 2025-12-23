@@ -7,11 +7,19 @@
 
 import type { IBuffer, IBufferCell, IBufferRange, ITerminalAddon, Terminal } from '@xterm/xterm';
 import type { IHTMLSerializeOptions, SerializeAddon as ISerializeApi, ISerializeOptions, ISerializeRange } from '@xterm/addon-serialize';
-import { DEFAULT_ANSI_COLORS } from 'browser/services/ThemeService';
 import { IAttributeData, IColor } from 'common/Types';
+import { DEFAULT_ANSI_COLORS } from 'browser/Types';
 
 function constrain(value: number, low: number, high: number): number {
   return Math.max(low, Math.min(value, high));
+}
+
+function escapeHTMLChar(c: string): string {
+  switch (c) {
+    case '&': return '&amp;';
+    case '<': return '&lt;';
+  }
+  return c;
 }
 
 // TODO: Refine this template class later
@@ -442,6 +450,13 @@ export class SerializeAddon implements ITerminalAddon , ISerializeApi {
     const buffer = terminal.buffer.active;
     const handler = new HTMLSerializeHandler(buffer, terminal, options);
     const onlySelection = options.onlySelection ?? false;
+    const range = options.range;
+    if (range) {
+      return handler.serialize({
+        start: { x: range.startCol,             y: typeof range.startLine === 'number' ? range.startLine : range.startLine },
+        end:   { x: terminal.cols, y: typeof range.endLine   === 'number' ? range.endLine   : range.endLine   }
+      });
+    }
     if (!onlySelection) {
       const maxRows = buffer.length;
       const scrollback = options.scrollback;
@@ -475,6 +490,7 @@ export class SerializeAddon implements ITerminalAddon , ISerializeApi {
     if (modes.originMode) content += '\x1b[?6h';
     if (modes.reverseWraparoundMode) content += '\x1b[?45h';
     if (modes.sendFocusMode) content += '\x1b[?1004h';
+    // synchronizedOutputMode doesn't need to be serialized as it's a temporary mode
 
     // Default: true
     if (modes.wraparoundMode === false) content += '\x1b[?7l';
@@ -669,7 +685,7 @@ export class HTMLSerializeHandler extends BaseSerializeHandler {
     if (isEmptyCell) {
       this._currentRow += ' ';
     } else {
-      this._currentRow += cell.getChars();
+      this._currentRow += escapeHTMLChar(cell.getChars());
     }
   }
 

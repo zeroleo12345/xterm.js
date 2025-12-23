@@ -1,12 +1,13 @@
 {
   "name": "@xterm/addon-ligatures",
-  "version": "0.8.0",
+  "version": "0.10.0",
   "description": "Add support for programming ligatures to xterm.js",
   "author": {
     "name": "The xterm.js authors",
     "url": "https://xtermjs.org/"
   },
   "main": "lib/addon-ligatures.js",
+  "module": "lib/addon-ligatures.mjs",
   "types": "typings/addon-ligatures.d.ts",
   "repository": "https://github.com/xtermjs/xterm.js/tree/master/addons/addon-ligatures",
   "engines": {
@@ -40,8 +41,5 @@
     "mkdirp": "0.5.5",
     "sinon": "6.3.5",
     "yauzl": "^2.10.0"
-  },
-  "peerDependencies": {
-    "@xterm/xterm": "^5.0.0"
   }
 }

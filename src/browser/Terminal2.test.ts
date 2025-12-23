@@ -3,19 +3,21 @@
  * @license MIT
  */
 
-import * as glob from 'glob';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as pty from 'node-pty';
-import { Terminal } from 'browser/Terminal';
+import { CoreBrowserTerminal } from 'browser/CoreBrowserTerminal';
 import { IDisposable } from '@xterm/xterm';
 
 // all test files expect terminal in 80x25
 const COLS = 80;
 const ROWS = 25;
 
-const TESTFILES = glob.sync('**/escape_sequence_files/*.in', { cwd: path.join(__dirname, '../..')});
+const escapeSequenceFilesDir = path.join(__dirname, '../../fixtures/escape_sequence_files');
+const TESTFILES = fs.readdirSync(escapeSequenceFilesDir)
+  .filter(f => f.endsWith('.in'))
+  .map(f => path.join(escapeSequenceFilesDir, f));
 const SKIP_FILES = [
   't0055-EL.in',            // EL/ED handle cursor at cols differently (see #3362)
   't0084-CBT.in',
@@ -33,14 +35,14 @@ if (os.platform() === 'darwin') {
   );
 }
 // filter skipFilenames
-const FILES = TESTFILES.filter(value => !SKIP_FILES.includes(value.split('/').slice(-1)[0]));
+const FILES = TESTFILES.filter(value => !SKIP_FILES.includes(path.basename(value)));
 
 describe('Escape Sequence Files', function(): void {
   this.timeout(1000);
 
   let ptyTerm: any;
   let slaveEnd: any;
-  let term: Terminal;
+  let term: CoreBrowserTerminal;
   let customHandler: IDisposable | undefined;
 
   before(() => {
@@ -49,7 +51,7 @@ describe('Escape Sequence Files', function(): void {
     }
     ptyTerm = (pty as any).open({cols: COLS, rows: ROWS});
     slaveEnd = ptyTerm._slave;
-    term = new Terminal({cols: COLS, rows: ROWS});
+    term = new CoreBrowserTerminal({cols: COLS, rows: ROWS});
     ptyTerm._master.on('data', (data: string) => term.write(data));
   });
 
@@ -62,7 +64,7 @@ describe('Escape Sequence Files', function(): void {
   });
 
   for (const filename of FILES) {
-    (process.platform === 'win32' ? it.skip : it)(filename.split('/').slice(-1)[0], async () => {
+    (process.platform === 'win32' ? it.skip : it)(path.basename(filename), async () => {
       // reset terminal and handler
       if (customHandler) {
         customHandler.dispose();
@@ -88,7 +90,7 @@ describe('Escape Sequence Files', function(): void {
       });
 
       // compare with expected output (right trimmed)
-      const expected = fs.readFileSync(filename.split('.')[0] + '.text', 'utf8');
+      const expected = fs.readFileSync(filename.replace(/\.in$/, '.text'), 'utf8');
       const expectedRightTrimmed = expected.split('\n').map(l => l.replace(/\s+$/, '')).join('\n');
       if (content !== expectedRightTrimmed) {
         throw new Error(formatError(fs.readFileSync(filename, 'utf8'), content, expected));
@@ -121,7 +123,7 @@ function formatError(input: string, output: string, expected: string): string {
 }
 
 // simple debug output of terminal cells
-function terminalToString(term: Terminal): string {
+function terminalToString(term: CoreBrowserTerminal): string {
   let result = '';
   let lineText = '';
   for (let line = term.buffer.ybase; line < term.buffer.ybase + term.rows; line++) {

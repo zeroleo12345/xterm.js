@@ -400,6 +400,7 @@ describe('Headless API Tests', function (): void {
         originMode: false,
         reverseWraparoundMode: false,
         sendFocusMode: false,
+        synchronizedOutputMode: false,
         wraparoundMode: true
       });
     });
@@ -473,7 +474,7 @@ describe('Headless API Tests', function (): void {
 
   it('dispose', async () => {
     term.dispose();
-    strictEqual((term as any)._core._isDisposed, true);
+    strictEqual((term as any)._core._store.isDisposed, true);
   });
 });
 
