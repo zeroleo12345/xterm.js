@@ -1193,7 +1193,7 @@ export class InputHandler extends Disposable implements IInputHandler {
   public eraseInDisplay(params: IParams, respectProtect: boolean = false): boolean {
     this._restrictCursor(this._bufferService.cols);
     let j;
-    console.log("1111 switch:", params.params[0])
+    // console.log("1111 switch:", params.params[0])
     switch (params.params[0]) {
       case 0:
         j = this._activeBuffer.y;
