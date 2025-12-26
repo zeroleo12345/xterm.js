@@ -6,7 +6,7 @@ yarn run build
 
 yarn run package
 
-cp lib/* /Users/zlx/github/tabby_project/tabby/tabby-terminal/node_modules/@xterm/xterm/lib/  && cp typings/* /Users/zlx/github/tabby_project/tabby/tabby-terminal/node_modules/@xterm/xterm/typings/
+cp lib/* /Users/zlx/github/tabby_project/tabby/tabby-terminal/node_modules/@xterm/xterm/lib/  && cp typings/xterm.d.ts /Users/zlx/github/tabby_project/tabby/tabby-terminal/node_modules/@xterm/xterm/typings/
 
 
 # patch in tabby
